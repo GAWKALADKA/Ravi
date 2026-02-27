@@ -5,119 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Araman Dresses</title>
 
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+emailjs.init("L-E1QJKjWzHu3YtdK");
+})();
+</script>
+
 <style>
 body{
 margin:0;
-font-family:Arial;
-background:#f1f3f6;
-transition:0.3s;
-}
-header{
-background:#111;
+font-family:Segoe UI;
+background:#0f0f1a;
 color:white;
+}
+
+/* Neon Gradient Header */
+header{
+background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffee);
 padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-position:sticky;
-top:0;
-z-index:1000;
+box-shadow:0 0 15px #00ffee;
 }
 .logo{
-font-size:20px;
+font-size:22px;
 font-weight:bold;
 }
-button{
-cursor:pointer;
-}
+
+/* Grid */
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-gap:15px;
-padding:15px;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:20px;
+padding:20px;
 }
+
+/* Cards */
 .card{
-background:white;
-padding:10px;
-border-radius:10px;
-box-shadow:0 3px 8px rgba(0,0,0,0.1);
+background:#1a1a2e;
+padding:15px;
+border-radius:12px;
+text-align:center;
+box-shadow:0 0 15px #00ffee;
 transition:0.3s;
-position:relative;
 }
 .card:hover{
-transform:translateY(-5px);
+transform:translateY(-8px);
+box-shadow:0 0 25px #ff00cc;
 }
-.card img{
-width:100%;
-height:180px;
-object-fit:contain;
+.image-box{
+height:150px;
+background:#111;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:10px;
+color:#888;
 }
-.price{
-color:green;
-font-weight:bold;
-}
+
+/* Neon Button */
 .btn{
-background:#2874f0;
-color:white;
+background:linear-gradient(45deg,#ff00cc,#00ffee);
 border:none;
-padding:8px;
-border-radius:5px;
-margin-top:5px;
-width:100%;
-}
-.wishlist{
-position:absolute;
-top:10px;
-right:10px;
-cursor:pointer;
-font-size:18px;
-}
-.cart-box{
-position:fixed;
-right:10px;
-bottom:10px;
-background:#2874f0;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
 color:white;
-padding:12px;
-border-radius:50%;
+cursor:pointer;
+box-shadow:0 0 10px #00ffee;
 }
+.btn:hover{
+box-shadow:0 0 20px #ff00cc;
+}
+
+.price{
+color:#00ffee;
+font-weight:bold;
+margin-top:8px;
+}
+
+/* Cart Floating */
+.cart-float{
+position:fixed;
+bottom:20px;
+right:20px;
+background:linear-gradient(45deg,#ff00cc,#00ffee);
+padding:15px;
+border-radius:50%;
+cursor:pointer;
+box-shadow:0 0 15px #00ffee;
+}
+
+/* Centered Cart Panel */
 .cart-panel{
 position:fixed;
-right:0;
-top:0;
-width:320px;
-height:100%;
-background:white;
-box-shadow:-5px 0 10px rgba(0,0,0,0.2);
-padding:15px;
-overflow:auto;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:350px;
+max-height:80%;
+background:#1a1a2e;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 25px #ff00cc;
 display:none;
+overflow:auto;
 }
-.dark{
-background:#121212;
-color:white;
-}
-.dark .card{
-background:#1e1e1e;
-color:white;
-}
+
+/* Popup */
 .popup{
 position:fixed;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-background:white;
+background:#1a1a2e;
 padding:20px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.3);
+border-radius:15px;
+box-shadow:0 0 25px #00ffee;
 display:none;
-z-index:2000;
-}
-.timer{
-background:red;
-color:white;
 text-align:center;
-padding:5px;
+width:300px;
+}
+
+input{
+width:100%;
+padding:8px;
+margin-top:8px;
+border-radius:6px;
+border:none;
+}
+
+.timer{
+background:#ff0033;
+text-align:center;
+padding:8px;
+box-shadow:0 0 15px red;
 }
 </style>
 </head>
@@ -126,38 +151,28 @@ padding:5px;
 
 <header>
 <div class="logo">Araman Dresses</div>
-<div>
-<button onclick="toggleMode()">🌙</button>
-<button onclick="openOwner()">About Owner</button>
-<button onclick="openCart()">🛒</button>
-</div>
+<div onclick="openCart()" style="cursor:pointer;">🛒</div>
 </header>
 
 <div class="timer" id="timer">Flash Sale Ends In: 10:00</div>
 
 <div class="grid" id="products"></div>
 
-<div class="cart-box" onclick="openCart()">🛒</div>
+<div class="cart-float" onclick="openCart()">🛒</div>
 
+<!-- CART -->
 <div class="cart-panel" id="cartPanel">
 <h3>Your Cart</h3>
 <div id="cartItems"></div>
-<p>GST (18%) + Delivery ₹50</p>
-<input placeholder="Coupon Code" id="coupon">
-<button class="btn" onclick="applyCoupon()">Apply</button>
+<p>GST 18% + Delivery ₹50</p>
+<input type="text" id="custName" placeholder="Your Name">
+<input type="text" id="custPhone" placeholder="Phone Number">
 <h4 id="total"></h4>
-<button class="btn" onclick="checkout()">Checkout</button>
+<button class="btn" onclick="checkout()">Proceed to Pay</button>
 <button class="btn" onclick="closeCart()">Close</button>
 </div>
 
-<div class="popup" id="ownerPopup">
-<h3>Hi I am Aayu 👋</h3>
-<p>I am owner of this website.<br>
-Achha hua aapne visit kiya ❤️<br>
-Mujhe ummeed hai aapko pasand aaya hoga.</p>
-<button class="btn" onclick="closeOwner()">Close</button>
-</div>
-
+<!-- PAYMENT -->
 <div class="popup" id="paymentPopup">
 <h3>UPI Payment</h3>
 <p>Send ₹<span id="payAmount"></span></p>
@@ -165,33 +180,21 @@ Mujhe ummeed hai aapko pasand aaya hoga.</p>
 <button class="btn" onclick="confirmOrder()">Payment Done</button>
 </div>
 
+<!-- CONFIRM -->
 <div class="popup" id="confirmPopup">
 <h3>Order Confirmed 🎉</h3>
 <p>Thank you for shopping!</p>
 <button class="btn" onclick="location.reload()">OK</button>
 </div>
 
-<div class="popup" id="spinPopup">
-<h3>Spin & Win 🎁</h3>
-<p>You Won ₹50 Coupon!</p>
-<button class="btn" onclick="closeSpin()">Close</button>
-</div>
-
 <script>
 
-let products = [
-{name:"Samsung S24 Ultra",img:"s24.png",price:1000},
-{name:"Vivo V60",img:"vivo.png",price:1000},
-{name:"Redmi 5G",img:"redmi.png",price:1000},
-{name:"iPhone Pro",img:"iphone.png",price:1000},
-{name:"OPPO K14x",img:"oppo_k14x.png",price:1000},
-{name:"OPPO Reno",img:"oppo_reno.png",price:1000},
-{name:"Realme",img:"realme.png",price:1000},
-{name:"Moto G35",img:"moto_g35.png",price:1000},
-{name:"Moto G06",img:"moto_g06.png",price:1000},
-{name:"iQOO Z10R",img:"iqoo.png",price:1000},
-{name:"Nord CE5 Black",img:"nord_black.png",price:1000},
-{name:"Nord CE5 Blue",img:"nord_blue.png",price:1000}
+let products=[
+{name:"Premium Dress 1",price:1000},
+{name:"Premium Dress 2",price:1000},
+{name:"Premium Dress 3",price:1000},
+{name:"Premium Dress 4",price:1000},
+{name:"Premium Dress 5",price:1000}
 ];
 
 let cart=[];
@@ -202,8 +205,7 @@ container.innerHTML="";
 products.forEach((p,i)=>{
 container.innerHTML+=`
 <div class="card">
-<div class="wishlist" onclick="wishlist()">❤️</div>
-<img src="${p.img}">
+<div class="image-box">No Image</div>
 <h4>${p.name}</h4>
 <div class="price">₹${p.price}</div>
 <button class="btn" onclick="addCart(${i})">Add to Cart</button>
@@ -221,6 +223,7 @@ function openCart(){
 document.getElementById("cartPanel").style.display="block";
 showCart();
 }
+
 function closeCart(){
 document.getElementById("cartPanel").style.display="none";
 }
@@ -228,7 +231,7 @@ document.getElementById("cartPanel").style.display="none";
 function showCart(){
 let items="";
 let total=0;
-cart.forEach((p)=>{
+cart.forEach(p=>{
 items+=`<p>${p.name} - ₹${p.price}</p>`;
 total+=p.price;
 });
@@ -238,53 +241,54 @@ document.getElementById("cartItems").innerHTML=items;
 document.getElementById("total").innerText="Total: ₹"+final.toFixed(0);
 }
 
-function applyCoupon(){
-let code=document.getElementById("coupon").value;
-if(code=="SAVE10"){
-alert("Coupon Applied");
-}
+function checkout(){
+let name=document.getElementById("custName").value;
+let phone=document.getElementById("custPhone").value;
+
+if(name=="" || phone==""){
+alert("Please fill name & phone");
+return;
 }
 
-function checkout(){
 let totalText=document.getElementById("total").innerText;
 document.getElementById("payAmount").innerText=totalText.replace("Total: ₹","");
 document.getElementById("paymentPopup").style.display="block";
 }
 
 function confirmOrder(){
+
+let name=document.getElementById("custName").value;
+let phone=document.getElementById("custPhone").value;
+
+let items="";
+cart.forEach(p=>{
+items+=p.name+" - ₹"+p.price+"\n";
+});
+
+let totalText=document.getElementById("total").innerText;
+
+emailjs.send("service_0xkt6c5","template_ob1kyu7",{
+customer_name:name,
+customer_phone:phone,
+order_items:items,
+order_total:totalText
+}).then(function(){
 document.getElementById("paymentPopup").style.display="none";
 document.getElementById("confirmPopup").style.display="block";
+},function(){
+alert("Email Failed ❌ Check EmailJS Template");
+});
+
 }
 
-function toggleMode(){
-document.body.classList.toggle("dark");
-}
-
-function openOwner(){
-document.getElementById("ownerPopup").style.display="block";
-}
-function closeOwner(){
-document.getElementById("ownerPopup").style.display="none";
-}
-
-function wishlist(){
-alert("Added to Wishlist ❤️");
-}
-
-setTimeout(()=>{
-document.getElementById("spinPopup").style.display="block";
-},3000);
-
-function closeSpin(){
-document.getElementById("spinPopup").style.display="none";
-}
-
+/* Flash Timer */
 let time=600;
 setInterval(()=>{
 if(time>0){
 time--;
 let m=Math.floor(time/60);
 let s=time%60;
+if(s<10)s="0"+s;
 document.getElementById("timer").innerText="Flash Sale Ends In: "+m+":"+s;
 }
 },1000);
@@ -292,4 +296,4 @@ document.getElementById("timer").innerText="Flash Sale Ends In: "+m+":"+s;
 </script>
 
 </body>
-  </html>
+</html>
