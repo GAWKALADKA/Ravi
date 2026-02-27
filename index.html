@@ -46,12 +46,7 @@ justify-content:center;
 font-size:24px;
 cursor:pointer;
 box-shadow:0 0 20px #00f7ff;
-transition:0.3s;
 z-index:999;
-}
-
-.cart-icon:hover{
-transform:scale(1.1);
 }
 
 .cart-count{
@@ -92,13 +87,6 @@ padding:15px;
 text-align:center;
 backdrop-filter: blur(8px);
 transition:0.4s;
-opacity:0;
-transform:translateY(30px);
-}
-
-.card.show{
-opacity:1;
-transform:translateY(0);
 }
 
 .card:hover{
@@ -108,9 +96,16 @@ box-shadow:0 0 20px #00f7ff;
 
 .card img{
 width:100%;
-height:200px;
-object-fit:cover;
+height:220px;
+object-fit:contain;
+background:#fff;
+padding:10px;
 border-radius:12px;
+transition:0.3s;
+}
+
+.card img:hover{
+transform:scale(1.05);
 }
 
 .price{
@@ -172,6 +167,13 @@ font-size:18px;
 color:#00f7ff;
 }
 
+input{
+background:#222;
+border:1px solid #333;
+color:white;
+border-radius:6px;
+}
+
 .about-popup{
 position:fixed;
 top:50%;
@@ -186,14 +188,6 @@ border-radius:12px;
 box-shadow:0 0 25px #00f7ff;
 text-align:center;
 z-index:3000;
-}
-
-.about-popup button{
-margin-top:15px;
-background:#00f7ff;
-border:none;
-padding:8px 15px;
-cursor:pointer;
 }
 
 .whatsapp{
@@ -232,9 +226,22 @@ box-shadow:0 0 15px #25D366;
 <div class="cart" id="cart">
 <h2>Your Cart</h2>
 <div id="cartItems"></div>
+
 <div class="total">Total: ₹<span id="totalPrice">0</span></div>
+
 <br>
-<button class="add-btn" onclick="toggleCart()">Close</button>
+
+<input type="text" id="custName" placeholder="Your Name" style="width:100%;padding:8px;margin-bottom:8px;">
+<input type="number" id="custPhone" placeholder="Phone Number" style="width:100%;padding:8px;margin-bottom:8px;">
+
+<button class="add-btn" onclick="submitOrder()" style="width:100%;margin-bottom:8px;">
+Submit Order
+</button>
+
+<button class="add-btn" onclick="toggleCart()" style="width:100%;">
+Close
+</button>
+
 </div>
 
 <div class="about-popup" id="aboutPopup">
@@ -246,7 +253,7 @@ Achha huaa aapne website visit kiya 😊<br>
 Mujhe lagta hai aapko ye pasand aaya hoga.<br><br>
 Thank you ❤️
 </p>
-<button onclick="closeAbout()">Close</button>
+<button class="add-btn" onclick="closeAbout()">Close</button>
 </div>
 
 <a href="https://wa.me/7520947031" class="whatsapp">💬</a>
@@ -257,22 +264,7 @@ const products=[
 {name:"Pova",price:17000,image:"https://i.ibb.co/k2wm3twM/61ik3-Qlkm-ML-AC-UF1000-1000-QL80-FMwebp.webp"},
 {name:"Nothing Phone",price:22000,image:"https://i.ibb.co/QvBS9yFq/images-3.jpg"},
 {name:"CMT Phone",price:15000,image:"https://i.ibb.co/q3sVxW2J/original-imah3ajcxshpd2t2.jpg"},
-{name:"Bracelet",price:1000,image:"https://i.ibb.co/3yv68YtJ/1-3-13.jpg"},
-{name:"Smart Watch",price:2999,image:"https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b"},
-{name:"Headphones",price:1999,image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e"},
-{name:"Gaming Mouse",price:1499,image:"https://images.unsplash.com/photo-1587202372775-e229f172b9d7"},
-{name:"Bluetooth Speaker",price:2499,image:"https://images.unsplash.com/photo-1518444065439-e933c06ce9cd"},
-{name:"DSLR Camera",price:45999,image:"https://images.unsplash.com/photo-1519183071298-a2962be96b9f"},
-{name:"Laptop Pro",price:59999,image:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853"},
-{name:"Drone 4K",price:34999,image:"https://images.unsplash.com/photo-1473968512647-3e447244af8f"},
-{name:"LED TV",price:28999,image:"https://images.unsplash.com/photo-1593359677879-a4bb92f829d1"},
-{name:"Power Bank",price:1299,image:"https://images.unsplash.com/photo-1580894908361-967195033215"},
-{name:"Tablet",price:19999,image:"https://images.unsplash.com/photo-1546054454-aa26e2b734c7"},
-{name:"AirPods",price:2999,image:"https://images.unsplash.com/photo-1585386959984-a4155224a1ad"},
-{name:"Smart Band",price:999,image:"https://images.unsplash.com/photo-1579586337278-3befd40fd17a"},
-{name:"VR Headset",price:4999,image:"https://images.unsplash.com/photo-1593508512255-86ab42a8e620"},
-{name:"Gaming Keyboard",price:1999,image:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8"},
-{name:"Portable Fan",price:699,image:"https://images.unsplash.com/photo-1582719471387-02dbe1b3c0c4"}
+{name:"Bracelet",price:1000,image:"https://i.ibb.co/3yv68YtJ/1-3-13.jpg"}
 ];
 
 let cart=[];
@@ -288,10 +280,8 @@ container.innerHTML+=`
 <button class="add-btn" onclick="addToCart(${i})">Add to Cart</button>
 </div>`;
 });
-setTimeout(()=>{
-document.querySelectorAll(".card").forEach(card=>card.classList.add("show"));
-},200);
 }
+displayProducts();
 
 function addToCart(i){
 let item=cart.find(c=>c.index===i);
@@ -337,16 +327,46 @@ function toggleCart(){
 document.getElementById("cart").classList.toggle("active");
 }
 
+function submitOrder(){
+let name=document.getElementById("custName").value;
+let phone=document.getElementById("custPhone").value;
+
+if(cart.length==0){
+alert("Cart is empty!");
+return;
+}
+if(name=="" || phone==""){
+alert("Please enter name & phone!");
+return;
+}
+
+let summary="Order Details:\n\n";
+let total=0;
+
+cart.forEach(c=>{
+let p=products[c.index];
+summary+=p.name+" x "+c.qty+" = ₹"+(p.price*c.qty)+"\n";
+total+=p.price*c.qty;
+});
+
+summary+="\nTotal: ₹"+total;
+
+alert("Order Submitted Successfully!\n\n"+summary);
+
+cart=[];
+updateCart();
+document.getElementById("custName").value="";
+document.getElementById("custPhone").value="";
+toggleCart();
+}
+
 function openAbout(){
 document.getElementById("aboutPopup").style.display="block";
 }
-
 function closeAbout(){
 document.getElementById("aboutPopup").style.display="none";
 }
-
-displayProducts();
 </script>
 
 </body>
-</html>
+  </html>
