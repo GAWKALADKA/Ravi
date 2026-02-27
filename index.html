@@ -5,148 +5,139 @@
 <title>Araman Dresses</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-margin:0;
 font-family:'Segoe UI',sans-serif;
-background:#0f0f1a;
+background:linear-gradient(135deg,#0f0c29,#1a1a2e,#16213e);
 color:white;
+overflow-x:hidden;
 }
 
+/* LOADER */
+#loader{
+position:fixed;
+width:100%;
+height:100vh;
+background:#0f0c29;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+font-size:22px;
+color:#00f0ff;
+animation:fadeOut 1s forwards;
+animation-delay:1.5s;
+}
+@keyframes fadeOut{
+to{opacity:0;visibility:hidden}
+}
+
+/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px 20px;
-background:#111827;
-box-shadow:0 0 20px #00f0ff;
+padding:18px 25px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+box-shadow:0 0 25px #00f0ff55;
+position:sticky;
+top:0;
+z-index:1000;
 }
 .logo{
-font-size:22px;
+font-size:24px;
 font-weight:bold;
 color:#00f0ff;
-text-shadow:0 0 10px #00f0ff;
+text-shadow:0 0 15px #00f0ff;
 }
 .search-box{flex:1;margin:0 20px;}
 .search-box input{
 width:100%;
-padding:8px;
+padding:10px;
 border:none;
-border-radius:4px;
-outline:none;
+border-radius:25px;
+background:#ffffff10;
+color:white;
 }
 
-.filters{
-display:flex;
-gap:10px;
-padding:15px;
-flex-wrap:wrap;
-justify-content:center;
-background:#0f172a;
-}
-.filter-btn{
-padding:6px 12px;
-border:1px solid #00f0ff;
-background:transparent;
-color:#00f0ff;
-cursor:pointer;
-border-radius:20px;
-}
-.filter-btn.active,.filter-btn:hover{
-background:#00f0ff;
-color:black;
-}
-
+/* PRODUCTS */
 .container{
 display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:20px;
-padding:20px;
-max-width:1300px;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+padding:30px;
+max-width:1400px;
 margin:auto;
 }
-@media(max-width:1000px){.container{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:600px){.container{grid-template-columns:1fr;}}
-
 .card{
-background:#111827;
-border-radius:10px;
-padding:15px;
+background:rgba(255,255,255,0.05);
+border-radius:15px;
+padding:18px;
 text-align:center;
-position:relative;
-transition:0.3s;
-border:1px solid #00f0ff;
+transition:.4s;
+backdrop-filter:blur(15px);
+border:1px solid #00f0ff40;
+opacity:0;
+transform:translateY(20px);
+animation:fadeIn .6s forwards;
+}
+.card:nth-child(n){animation-delay:.2s}
+@keyframes fadeIn{
+to{opacity:1;transform:translateY(0)}
 }
 .card:hover{
-box-shadow:0 0 20px #00f0ff;
-transform:translateY(-5px);
+transform:scale(1.05);
+box-shadow:0 0 25px #00f0ff88;
 }
 .card img{
 width:100%;
 height:200px;
 object-fit:contain;
 }
-.discount{
-position:absolute;
-top:10px;
-left:10px;
-background:#ff0066;
-color:white;
-padding:3px 6px;
-font-size:12px;
-border-radius:3px;
-}
-.price{
-color:#00ff99;
-font-weight:bold;
-margin:6px 0;
-}
-.old-price{
-text-decoration:line-through;
-color:gray;
-font-size:14px;
-}
-.rating{
-color:#ffd700;
-font-size:14px;
-}
+.price{color:#00ff99;font-weight:bold;font-size:18px;margin:6px 0}
+.old-price{text-decoration:line-through;color:#aaa;font-size:14px}
 .add-btn{
 background:#00f0ff;
 border:none;
-padding:8px;
+padding:10px;
 width:100%;
-cursor:pointer;
-color:black;
-border-radius:4px;
+border-radius:25px;
 font-weight:bold;
+cursor:pointer;
+transition:.3s;
+}
+.add-btn:hover{
+background:#00ff99;
+box-shadow:0 0 20px #00ff99;
 }
 
+/* CART ICON */
 .cart-icon{
 position:fixed;
 bottom:30px;
 right:30px;
 background:#00f0ff;
 color:black;
-width:60px;
-height:60px;
+width:65px;height:65px;
 border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
+display:flex;align-items:center;justify-content:center;
+font-size:26px;
 cursor:pointer;
-box-shadow:0 0 20px #00f0ff;
+box-shadow:0 0 25px #00f0ff;
+transition:.3s;
 }
+.cart-icon:hover{transform:scale(1.1)}
 .cart-count{
 position:absolute;
-top:-6px;
-right:-6px;
-background:red;
-color:white;
+top:-6px;right:-6px;
+background:red;color:white;
 font-size:12px;
-padding:3px 6px;
+padding:4px 7px;
 border-radius:50%;
 }
 
+/* CART */
 .cart{
 position:fixed;
 top:0;
@@ -155,43 +146,61 @@ width:350px;
 height:100%;
 background:#111827;
 padding:20px;
-transition:0.4s;
+transition:.4s;
 overflow:auto;
-box-shadow:0 0 20px #00f0ff;
+box-shadow:-5px 0 30px #00f0ff66;
 }
-.cart.active{right:0;}
-
-.cart h2{
+.cart.active{right:0}
+.cart h2{text-align:center;color:#00f0ff}
+.cart-item{
 text-align:center;
-color:#00f0ff;
+margin:10px 0;
 }
-
-#cartItems{
-text-align:center;
-margin-top:20px;
-margin-bottom:20px;
+.qty-btn{
+background:#00f0ff;
+border:none;
+padding:4px 8px;
+margin:0 5px;
+cursor:pointer;
 }
-
-.total{
-font-weight:bold;
-margin-top:10px;
-text-align:center;
-color:#00ff99;
+.remove-btn{
+background:red;
+border:none;
+padding:4px 8px;
+color:white;
+cursor:pointer;
 }
-
+.total{text-align:center;margin-top:10px;font-weight:bold;color:#00ff99}
 input{
 width:100%;
-padding:6px;
-margin:5px 0;
-border-radius:4px;
+padding:8px;
+margin:6px 0;
+border-radius:8px;
 border:none;
 }
 
-button{cursor:pointer;}
+/* INVOICE MODAL */
+#invoice{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scale(0);
+background:#111827;
+padding:25px;
+width:90%;
+max-width:400px;
+border-radius:15px;
+box-shadow:0 0 30px #00f0ff;
+transition:.4s;
+z-index:2000;
+}
+#invoice.active{transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 
 <body>
+
+<div id="loader">Welcome to Araman Dresses...</div>
 
 <header>
 <div class="logo">Araman Dresses</div>
@@ -199,14 +208,6 @@ button{cursor:pointer;}
 <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProduct()">
 </div>
 </header>
-
-<div class="filters">
-<button class="filter-btn active" onclick="filterCategory('All',this)">All</button>
-<button class="filter-btn" onclick="filterCategory('Mobile',this)">Mobile</button>
-<button class="filter-btn" onclick="filterCategory('Electronics',this)">Electronics</button>
-<button class="filter-btn" onclick="filterCategory('Accessories',this)">Accessories</button>
-<button class="filter-btn" onclick="filterCategory('Fashion',this)">Fashion</button>
-</div>
 
 <div class="container" id="productContainer"></div>
 
@@ -220,17 +221,18 @@ button{cursor:pointer;}
 <div class="total">Total: ₹<span id="totalPrice">0</span></div>
 <input type="text" id="custName" placeholder="Your Name">
 <input type="number" id="custPhone" placeholder="Phone Number">
-<button class="add-btn" onclick="submitOrder()">Submit Order</button>
-<button onclick="toggleCart()">Close</button>
+<button class="add-btn" onclick="generateInvoice()">Submit Order</button>
 </div>
+
+<div id="invoice"></div>
 
 <script>
 const products=[
-{name:"Iphone 99",price:1000,old:1500,cat:"Mobile",rating:4,image:"https://i.ibb.co/fY4DDK62/original-imahft5nxmyqndhf.jpg"},
-{name:"Pova",price:17000,old:19000,cat:"Mobile",rating:5,image:"https://i.ibb.co/k2wm3twM/61ik3-Qlkm-ML-AC-UF1000-1000-QL80-FMwebp.webp"},
-{name:"Nothing Phone",price:22000,old:25000,cat:"Mobile",rating:4,image:"https://i.ibb.co/QvBS9yFq/images-3.jpg"},
-{name:"CMT Phone",price:15000,old:18000,cat:"Mobile",rating:3,image:"https://i.ibb.co/q3sVxW2J/original-imah3ajcxshpd2t2.jpg"},
-{name:"Bracelet",price:1000,old:1500,cat:"Fashion",rating:4,image:"https://i.ibb.co/3yv68YtJ/1-3-13.jpg"}
+{name:"Iphone 99",price:1000,image:"https://i.ibb.co/fY4DDK62/original-imahft5nxmyqndhf.jpg"},
+{name:"Pova",price:17000,image:"https://i.ibb.co/k2wm3twM/61ik3-Qlkm-ML-AC-UF1000-1000-QL80-FMwebp.webp"},
+{name:"Nothing Phone",price:22000,image:"https://i.ibb.co/QvBS9yFq/images-3.jpg"},
+{name:"CMT Phone",price:15000,image:"https://i.ibb.co/q3sVxW2J/original-imah3ajcxshpd2t2.jpg"},
+{name:"Bracelet",price:1000,image:"https://i.ibb.co/3yv68YtJ/1-3-13.jpg"}
 ];
 
 let filteredProducts=[...products];
@@ -240,34 +242,16 @@ function displayProducts(){
 const container=document.getElementById("productContainer");
 container.innerHTML="";
 filteredProducts.forEach((p,i)=>{
-let stars="★".repeat(p.rating)+"☆".repeat(5-p.rating);
 container.innerHTML+=`
 <div class="card">
-<div class="discount">${Math.round((1-p.price/p.old)*100)}% OFF</div>
-<img src="${p.image}" onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
+<img src="${p.image}">
 <h4>${p.name}</h4>
-<div class="rating">${stars}</div>
-<div class="old-price">₹${p.old}</div>
 <div class="price">₹${p.price}</div>
-<button class="add-btn" onclick="addToCart(${products.indexOf(p)})">Add to Cart</button>
+<button class="add-btn" onclick="addToCart(${i})">Add to Cart</button>
 </div>`;
 });
 }
 displayProducts();
-
-function searchProduct(){
-let val=document.getElementById("searchInput").value.toLowerCase();
-filteredProducts=products.filter(p=>p.name.toLowerCase().includes(val));
-displayProducts();
-}
-
-function filterCategory(cat,btn){
-document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-if(cat=="All"){filteredProducts=[...products];}
-else{filteredProducts=products.filter(p=>p.cat==cat);}
-displayProducts();
-}
 
 function addToCart(i){
 let item=cart.find(c=>c.index===i);
@@ -282,16 +266,66 @@ cart.forEach((c,i)=>{
 let p=products[c.index];
 total+=p.price*c.qty;
 totalQty+=c.qty;
-html+=`${p.name} x ${c.qty}<br>`;
+html+=`
+<div class="cart-item">
+${p.name}<br>
+<button class="qty-btn" onclick="changeQty(${i},-1)">-</button>
+${c.qty}
+<button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+<br>
+<button class="remove-btn" onclick="removeItem(${i})">Remove</button>
+</div>`;
 });
 document.getElementById("cartItems").innerHTML=html;
 document.getElementById("totalPrice").innerText=total;
 document.getElementById("cartCount").innerText=totalQty;
 }
 
-function toggleCart(){document.getElementById("cart").classList.toggle("active");}
-function submitOrder(){alert("Order Submitted Successfully!");cart=[];updateCart();toggleCart();}
+function changeQty(i,val){
+cart[i].qty+=val;
+if(cart[i].qty<=0)cart.splice(i,1);
+updateCart();
+}
+function removeItem(i){
+cart.splice(i,1);
+updateCart();
+}
+function toggleCart(){
+document.getElementById("cart").classList.toggle("active");
+}
+
+function generateInvoice(){
+let name=document.getElementById("custName").value;
+let phone=document.getElementById("custPhone").value;
+let invoice=document.getElementById("invoice");
+let items="";
+let total=0;
+
+cart.forEach(c=>{
+let p=products[c.index];
+items+=`${p.name} x ${c.qty}<br>`;
+total+=p.price*c.qty;
+});
+
+invoice.innerHTML=`
+<h3 style="color:#00f0ff;text-align:center">Invoice</h3>
+Customer: ${name}<br>
+Phone: ${phone}<br><br>
+${items}
+<hr>
+Total: ₹${total}<br><br>
+<button onclick="closeInvoice()" class="add-btn">Close</button>
+`;
+invoice.classList.add("active");
+cart=[];
+updateCart();
+toggleCart();
+}
+
+function closeInvoice(){
+document.getElementById("invoice").classList.remove("active");
+}
 </script>
 
 </body>
-</html>
+  </html>
