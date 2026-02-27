@@ -43,7 +43,6 @@ transition:0.3s;
 transform:translateY(-8px);
 box-shadow:0 0 25px #ff00cc;
 }
-
 .card img{
 width:100%;
 height:150px;
@@ -75,6 +74,19 @@ padding:15px;
 border-radius:50%;
 cursor:pointer;
 box-shadow:0 0 15px #00ffee;
+}
+
+.whatsapp{
+position:fixed;
+bottom:20px;
+left:20px;
+background:#25D366;
+color:white;
+padding:15px;
+border-radius:50%;
+text-decoration:none;
+font-size:20px;
+box-shadow:0 0 15px #25D366;
 }
 
 .cart-panel{
@@ -127,7 +139,10 @@ box-shadow:0 0 15px red;
 
 <header>
 <div class="logo">Araman Dresses</div>
-<div onclick="openCart()" style="cursor:pointer;">🛒</div>
+<div>
+<span onclick="openAbout()" style="cursor:pointer;margin-right:15px;">About</span>
+<span onclick="openCart()" style="cursor:pointer;">🛒</span>
+</div>
 </header>
 
 <div class="timer" id="timer">Flash Sale Ends In: 10:00</div>
@@ -136,6 +151,18 @@ box-shadow:0 0 15px red;
 
 <div class="cart-float" onclick="openCart()">🛒</div>
 
+<a href="https://wa.me/7520947031" class="whatsapp" target="_blank">💬</a>
+
+<!-- ABOUT POPUP -->
+<div class="popup" id="aboutPopup">
+<h3>Hi I am Aayu 👋</h3>
+<p>Mai is website ka owner hu.<br>
+Achha hua aapne visit kiya ❤️<br>
+Mujhe ummeed hai aapko pasand aaya hoga.</p>
+<button class="btn" onclick="closeAbout()">Close</button>
+</div>
+
+<!-- CART -->
 <div class="cart-panel" id="cartPanel">
 <h3>Your Cart</h3>
 <div id="cartItems"></div>
@@ -147,6 +174,7 @@ box-shadow:0 0 15px red;
 <button class="btn" onclick="closeCart()">Close</button>
 </div>
 
+<!-- PAYMENT -->
 <div class="popup" id="paymentPopup">
 <h3>UPI Payment</h3>
 <p>Send ₹<span id="payAmount"></span></p>
@@ -154,6 +182,7 @@ box-shadow:0 0 15px red;
 <button class="btn" onclick="confirmOrder()">Payment Done</button>
 </div>
 
+<!-- CONFIRM -->
 <div class="popup" id="confirmPopup">
 <h3>Order Confirmed 🎉</h3>
 <p>Thank you for shopping!</p>
@@ -196,7 +225,6 @@ function openCart(){
 document.getElementById("cartPanel").style.display="block";
 showCart();
 }
-
 function closeCart(){
 document.getElementById("cartPanel").style.display="none";
 }
@@ -229,15 +257,12 @@ document.getElementById("paymentPopup").style.display="block";
 }
 
 function confirmOrder(){
-
 let name=document.getElementById("custName").value;
 let phone=document.getElementById("custPhone").value;
-
 let items="";
 cart.forEach(p=>{
 items+=p.name+" - ₹"+p.price+"\n";
 });
-
 let totalText=document.getElementById("total").innerText;
 
 emailjs.send("service_0xkt6c5","template_ob1kyu7",{
@@ -249,9 +274,15 @@ order_total:totalText
 document.getElementById("paymentPopup").style.display="none";
 document.getElementById("confirmPopup").style.display="block";
 },function(){
-alert("Email Failed ❌ Check EmailJS Template");
+alert("Email Failed ❌");
 });
+}
 
+function openAbout(){
+document.getElementById("aboutPopup").style.display="block";
+}
+function closeAbout(){
+document.getElementById("aboutPopup").style.display="none";
 }
 
 let time=600;
