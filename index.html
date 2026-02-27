@@ -1,129 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Araman Dresses</title>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 body{
-font-family:'Segoe UI',sans-serif;
-background:linear-gradient(135deg,#0f0c29,#1a1a2e,#16213e);
-color:white;
+margin:0;
+font-family:Arial;
+background:#f1f3f6;
+transition:0.3s;
 }
-
-/* HEADER */
 header{
+background:#111;
+color:white;
+padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:18px 25px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(15px);
-box-shadow:0 0 25px #00f0ff55;
+position:sticky;
+top:0;
+z-index:1000;
 }
 .logo{
-font-size:24px;
+font-size:20px;
 font-weight:bold;
-color:#00f0ff;
-text-shadow:0 0 15px #00f0ff;
 }
-
-/* PRODUCTS */
-.container{
+button{
+cursor:pointer;
+}
+.grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-padding:30px;
+grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+gap:15px;
+padding:15px;
 }
 .card{
-background:rgba(255,255,255,0.05);
-border-radius:15px;
-padding:18px;
-text-align:center;
-border:1px solid #00f0ff40;
+background:white;
+padding:10px;
+border-radius:10px;
+box-shadow:0 3px 8px rgba(0,0,0,0.1);
+transition:0.3s;
+position:relative;
+}
+.card:hover{
+transform:translateY(-5px);
 }
 .card img{
 width:100%;
-height:200px;
+height:180px;
 object-fit:contain;
 }
-.price{color:#00ff99;font-weight:bold;margin:8px 0}
-.add-btn{
-background:#00f0ff;
-border:none;
-padding:10px;
-width:100%;
-border-radius:25px;
-cursor:pointer;
+.price{
+color:green;
 font-weight:bold;
 }
-
-/* CART */
-.cart-icon{
-position:fixed;
-bottom:30px;
-right:30px;
-background:#00f0ff;
-color:black;
-width:65px;height:65px;
-border-radius:50%;
-display:flex;align-items:center;justify-content:center;
-font-size:26px;
-cursor:pointer;
-}
-.cart-count{
-position:absolute;
-top:-6px;right:-6px;
-background:red;color:white;
-font-size:12px;
-padding:4px 7px;
-border-radius:50%;
-}
-
-.cart{
-position:fixed;
-top:0;
-right:-400px;
-width:350px;
-height:100%;
-background:#111827;
-padding:20px;
-transition:.4s;
-overflow:auto;
-}
-.cart.active{right:0}
-
-.cart-item{text-align:center;margin:10px 0}
-.total{text-align:center;margin-top:10px;font-weight:bold;color:#00ff99}
-
-input{
-width:100%;
-padding:8px;
-margin:6px 0;
-border-radius:8px;
+.btn{
+background:#2874f0;
+color:white;
 border:none;
+padding:8px;
+border-radius:5px;
+margin-top:5px;
+width:100%;
 }
-
-/* PAYMENT MODAL */
-#paymentModal{
+.wishlist{
+position:absolute;
+top:10px;
+right:10px;
+cursor:pointer;
+font-size:18px;
+}
+.cart-box{
+position:fixed;
+right:10px;
+bottom:10px;
+background:#2874f0;
+color:white;
+padding:12px;
+border-radius:50%;
+}
+.cart-panel{
+position:fixed;
+right:0;
+top:0;
+width:320px;
+height:100%;
+background:white;
+box-shadow:-5px 0 10px rgba(0,0,0,0.2);
+padding:15px;
+overflow:auto;
+display:none;
+}
+.dark{
+background:#121212;
+color:white;
+}
+.dark .card{
+background:#1e1e1e;
+color:white;
+}
+.popup{
 position:fixed;
 top:50%;
 left:50%;
-transform:translate(-50%,-50%) scale(0);
-background:#111827;
-padding:25px;
-width:90%;
-max-width:350px;
-border-radius:15px;
-box-shadow:0 0 30px #00f0ff;
-transition:.4s;
+transform:translate(-50%,-50%);
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+display:none;
 z-index:2000;
-text-align:center;
 }
-#paymentModal.active{transform:translate(-50%,-50%) scale(1)}
+.timer{
+background:red;
+color:white;
+text-align:center;
+padding:5px;
+}
 </style>
 </head>
 
@@ -131,122 +126,170 @@ text-align:center;
 
 <header>
 <div class="logo">Araman Dresses</div>
+<div>
+<button onclick="toggleMode()">🌙</button>
+<button onclick="openOwner()">About Owner</button>
+<button onclick="openCart()">🛒</button>
+</div>
 </header>
 
-<div class="container" id="productContainer"></div>
+<div class="timer" id="timer">Flash Sale Ends In: 10:00</div>
 
-<div class="cart-icon" onclick="toggleCart()">
-🛒 <span class="cart-count" id="cartCount">0</span>
-</div>
+<div class="grid" id="products"></div>
 
-<div class="cart" id="cart">
-<h2 style="text-align:center;color:#00f0ff">Your Cart</h2>
+<div class="cart-box" onclick="openCart()">🛒</div>
+
+<div class="cart-panel" id="cartPanel">
+<h3>Your Cart</h3>
 <div id="cartItems"></div>
-<div class="total">Total: ₹<span id="totalPrice">0</span></div>
-<input type="text" id="custName" placeholder="Your Name">
-<input type="number" id="custPhone" placeholder="Phone Number">
-<button class="add-btn" onclick="openPayment()">Proceed to Payment</button>
+<p>GST (18%) + Delivery ₹50</p>
+<input placeholder="Coupon Code" id="coupon">
+<button class="btn" onclick="applyCoupon()">Apply</button>
+<h4 id="total"></h4>
+<button class="btn" onclick="checkout()">Checkout</button>
+<button class="btn" onclick="closeCart()">Close</button>
 </div>
 
-<div id="paymentModal">
-<h3 style="color:#00f0ff">Pay via UPI</h3>
-<p>UPI ID:</p>
-<b>bihariiii@ptyes</b>
-<br><br>
-<button class="add-btn" onclick="sendOrder()">I Have Paid</button>
-<br><br>
-<button onclick="closePayment()">Cancel</button>
+<div class="popup" id="ownerPopup">
+<h3>Hi I am Aayu 👋</h3>
+<p>I am owner of this website.<br>
+Achha hua aapne visit kiya ❤️<br>
+Mujhe ummeed hai aapko pasand aaya hoga.</p>
+<button class="btn" onclick="closeOwner()">Close</button>
+</div>
+
+<div class="popup" id="paymentPopup">
+<h3>UPI Payment</h3>
+<p>Send ₹<span id="payAmount"></span></p>
+<p>UPI: bihariiii@ptyes</p>
+<button class="btn" onclick="confirmOrder()">Payment Done</button>
+</div>
+
+<div class="popup" id="confirmPopup">
+<h3>Order Confirmed 🎉</h3>
+<p>Thank you for shopping!</p>
+<button class="btn" onclick="location.reload()">OK</button>
+</div>
+
+<div class="popup" id="spinPopup">
+<h3>Spin & Win 🎁</h3>
+<p>You Won ₹50 Coupon!</p>
+<button class="btn" onclick="closeSpin()">Close</button>
 </div>
 
 <script>
-(function(){
-emailjs.init("L-E1QJKjWzHu3YtdK");
-})();
 
-const products=[
-{name:"Iphone 99",price:1000,image:"https://i.ibb.co/fY4DDK62/original-imahft5nxmyqndhf.jpg"},
-{name:"Pova",price:17000,image:"https://i.ibb.co/k2wm3twM/61ik3-Qlkm-ML-AC-UF1000-1000-QL80-FMwebp.webp"},
-{name:"Nothing Phone",price:22000,image:"https://i.ibb.co/QvBS9yFq/images-3.jpg"},
-{name:"Bracelet",price:1000,image:"https://i.ibb.co/3yv68YtJ/1-3-13.jpg"}
+let products = [
+{name:"Samsung S24 Ultra",img:"s24.png",price:1000},
+{name:"Vivo V60",img:"vivo.png",price:1000},
+{name:"Redmi 5G",img:"redmi.png",price:1000},
+{name:"iPhone Pro",img:"iphone.png",price:1000},
+{name:"OPPO K14x",img:"oppo_k14x.png",price:1000},
+{name:"OPPO Reno",img:"oppo_reno.png",price:1000},
+{name:"Realme",img:"realme.png",price:1000},
+{name:"Moto G35",img:"moto_g35.png",price:1000},
+{name:"Moto G06",img:"moto_g06.png",price:1000},
+{name:"iQOO Z10R",img:"iqoo.png",price:1000},
+{name:"Nord CE5 Black",img:"nord_black.png",price:1000},
+{name:"Nord CE5 Blue",img:"nord_blue.png",price:1000}
 ];
 
 let cart=[];
 
 function displayProducts(){
-const container=document.getElementById("productContainer");
+let container=document.getElementById("products");
+container.innerHTML="";
 products.forEach((p,i)=>{
 container.innerHTML+=`
 <div class="card">
-<img src="${p.image}">
+<div class="wishlist" onclick="wishlist()">❤️</div>
+<img src="${p.img}">
 <h4>${p.name}</h4>
 <div class="price">₹${p.price}</div>
-<button class="add-btn" onclick="addToCart(${i})">Add to Cart</button>
+<button class="btn" onclick="addCart(${i})">Add to Cart</button>
 </div>`;
 });
 }
 displayProducts();
 
-function addToCart(i){
-let item=cart.find(c=>c.index===i);
-if(item){item.qty++;}
-else{cart.push({index:i,qty:1});}
-updateCart();
+function addCart(i){
+cart.push(products[i]);
+alert("Added to cart");
 }
 
-function updateCart(){
-let html="",total=0,totalQty=0;
-cart.forEach((c)=>{
-let p=products[c.index];
-total+=p.price*c.qty;
-totalQty+=c.qty;
-html+=`${p.name} x ${c.qty}<br>`;
-});
-document.getElementById("cartItems").innerHTML=html;
-document.getElementById("totalPrice").innerText=total;
-document.getElementById("cartCount").innerText=totalQty;
+function openCart(){
+document.getElementById("cartPanel").style.display="block";
+showCart();
+}
+function closeCart(){
+document.getElementById("cartPanel").style.display="none";
 }
 
-function toggleCart(){
-document.getElementById("cart").classList.toggle("active");
-}
-
-function openPayment(){
-document.getElementById("paymentModal").classList.add("active");
-}
-
-function closePayment(){
-document.getElementById("paymentModal").classList.remove("active");
-}
-
-function sendOrder(){
-let name=document.getElementById("custName").value;
-let phone=document.getElementById("custPhone").value;
-
+function showCart(){
 let items="";
 let total=0;
-
-cart.forEach(c=>{
-let p=products[c.index];
-items+=p.name+" x "+c.qty+"\n";
-total+=p.price*c.qty;
+cart.forEach((p)=>{
+items+=`<p>${p.name} - ₹${p.price}</p>`;
+total+=p.price;
 });
-
-emailjs.send("service_0xkt6c5","template_ob1kyu7",{
-customer_name:name,
-customer_phone:phone,
-order_items:items,
-total_amount:total
-}).then(function(){
-alert("Order Sent Successfully ✅");
-cart=[];
-updateCart();
-closePayment();
-toggleCart();
-},function(error){
-alert("Email Failed ❌");
-});
+let gst=total*0.18;
+let final=total+gst+50;
+document.getElementById("cartItems").innerHTML=items;
+document.getElementById("total").innerText="Total: ₹"+final.toFixed(0);
 }
+
+function applyCoupon(){
+let code=document.getElementById("coupon").value;
+if(code=="SAVE10"){
+alert("Coupon Applied");
+}
+}
+
+function checkout(){
+let totalText=document.getElementById("total").innerText;
+document.getElementById("payAmount").innerText=totalText.replace("Total: ₹","");
+document.getElementById("paymentPopup").style.display="block";
+}
+
+function confirmOrder(){
+document.getElementById("paymentPopup").style.display="none";
+document.getElementById("confirmPopup").style.display="block";
+}
+
+function toggleMode(){
+document.body.classList.toggle("dark");
+}
+
+function openOwner(){
+document.getElementById("ownerPopup").style.display="block";
+}
+function closeOwner(){
+document.getElementById("ownerPopup").style.display="none";
+}
+
+function wishlist(){
+alert("Added to Wishlist ❤️");
+}
+
+setTimeout(()=>{
+document.getElementById("spinPopup").style.display="block";
+},3000);
+
+function closeSpin(){
+document.getElementById("spinPopup").style.display="none";
+}
+
+let time=600;
+setInterval(()=>{
+if(time>0){
+time--;
+let m=Math.floor(time/60);
+let s=time%60;
+document.getElementById("timer").innerText="Flash Sale Ends In: "+m+":"+s;
+}
+},1000);
+
 </script>
 
 </body>
-</html>
+  </html>
