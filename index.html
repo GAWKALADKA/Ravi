@@ -4,32 +4,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Araman Dresses</title>
 
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
 font-family:'Segoe UI',sans-serif;
 background:linear-gradient(135deg,#0f0c29,#1a1a2e,#16213e);
 color:white;
-overflow-x:hidden;
-}
-
-/* LOADER */
-#loader{
-position:fixed;
-width:100%;
-height:100vh;
-background:#0f0c29;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-font-size:22px;
-color:#00f0ff;
-animation:fadeOut 1s forwards;
-animation-delay:1.5s;
-}
-@keyframes fadeOut{
-to{opacity:0;visibility:hidden}
 }
 
 /* HEADER */
@@ -41,24 +23,12 @@ padding:18px 25px;
 background:rgba(255,255,255,0.05);
 backdrop-filter:blur(15px);
 box-shadow:0 0 25px #00f0ff55;
-position:sticky;
-top:0;
-z-index:1000;
 }
 .logo{
 font-size:24px;
 font-weight:bold;
 color:#00f0ff;
 text-shadow:0 0 15px #00f0ff;
-}
-.search-box{flex:1;margin:0 20px;}
-.search-box input{
-width:100%;
-padding:10px;
-border:none;
-border-radius:25px;
-background:#ffffff10;
-color:white;
 }
 
 /* PRODUCTS */
@@ -67,52 +37,31 @@ display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:25px;
 padding:30px;
-max-width:1400px;
-margin:auto;
 }
 .card{
 background:rgba(255,255,255,0.05);
 border-radius:15px;
 padding:18px;
 text-align:center;
-transition:.4s;
-backdrop-filter:blur(15px);
 border:1px solid #00f0ff40;
-opacity:0;
-transform:translateY(20px);
-animation:fadeIn .6s forwards;
-}
-.card:nth-child(n){animation-delay:.2s}
-@keyframes fadeIn{
-to{opacity:1;transform:translateY(0)}
-}
-.card:hover{
-transform:scale(1.05);
-box-shadow:0 0 25px #00f0ff88;
 }
 .card img{
 width:100%;
 height:200px;
 object-fit:contain;
 }
-.price{color:#00ff99;font-weight:bold;font-size:18px;margin:6px 0}
-.old-price{text-decoration:line-through;color:#aaa;font-size:14px}
+.price{color:#00ff99;font-weight:bold;margin:8px 0}
 .add-btn{
 background:#00f0ff;
 border:none;
 padding:10px;
 width:100%;
 border-radius:25px;
-font-weight:bold;
 cursor:pointer;
-transition:.3s;
-}
-.add-btn:hover{
-background:#00ff99;
-box-shadow:0 0 20px #00ff99;
+font-weight:bold;
 }
 
-/* CART ICON */
+/* CART */
 .cart-icon{
 position:fixed;
 bottom:30px;
@@ -124,10 +73,7 @@ border-radius:50%;
 display:flex;align-items:center;justify-content:center;
 font-size:26px;
 cursor:pointer;
-box-shadow:0 0 25px #00f0ff;
-transition:.3s;
 }
-.cart-icon:hover{transform:scale(1.1)}
 .cart-count{
 position:absolute;
 top:-6px;right:-6px;
@@ -137,7 +83,6 @@ padding:4px 7px;
 border-radius:50%;
 }
 
-/* CART */
 .cart{
 position:fixed;
 top:0;
@@ -148,29 +93,12 @@ background:#111827;
 padding:20px;
 transition:.4s;
 overflow:auto;
-box-shadow:-5px 0 30px #00f0ff66;
 }
 .cart.active{right:0}
-.cart h2{text-align:center;color:#00f0ff}
-.cart-item{
-text-align:center;
-margin:10px 0;
-}
-.qty-btn{
-background:#00f0ff;
-border:none;
-padding:4px 8px;
-margin:0 5px;
-cursor:pointer;
-}
-.remove-btn{
-background:red;
-border:none;
-padding:4px 8px;
-color:white;
-cursor:pointer;
-}
+
+.cart-item{text-align:center;margin:10px 0}
 .total{text-align:center;margin-top:10px;font-weight:bold;color:#00ff99}
+
 input{
 width:100%;
 padding:8px;
@@ -179,8 +107,8 @@ border-radius:8px;
 border:none;
 }
 
-/* INVOICE MODAL */
-#invoice{
+/* PAYMENT MODAL */
+#paymentModal{
 position:fixed;
 top:50%;
 left:50%;
@@ -188,25 +116,21 @@ transform:translate(-50%,-50%) scale(0);
 background:#111827;
 padding:25px;
 width:90%;
-max-width:400px;
+max-width:350px;
 border-radius:15px;
 box-shadow:0 0 30px #00f0ff;
 transition:.4s;
 z-index:2000;
+text-align:center;
 }
-#invoice.active{transform:translate(-50%,-50%) scale(1)}
+#paymentModal.active{transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 
 <body>
 
-<div id="loader">Welcome to Araman Dresses...</div>
-
 <header>
 <div class="logo">Araman Dresses</div>
-<div class="search-box">
-<input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProduct()">
-</div>
 </header>
 
 <div class="container" id="productContainer"></div>
@@ -216,32 +140,41 @@ z-index:2000;
 </div>
 
 <div class="cart" id="cart">
-<h2>Your Cart</h2>
+<h2 style="text-align:center;color:#00f0ff">Your Cart</h2>
 <div id="cartItems"></div>
 <div class="total">Total: ₹<span id="totalPrice">0</span></div>
 <input type="text" id="custName" placeholder="Your Name">
 <input type="number" id="custPhone" placeholder="Phone Number">
-<button class="add-btn" onclick="generateInvoice()">Submit Order</button>
+<button class="add-btn" onclick="openPayment()">Proceed to Payment</button>
 </div>
 
-<div id="invoice"></div>
+<div id="paymentModal">
+<h3 style="color:#00f0ff">Pay via UPI</h3>
+<p>UPI ID:</p>
+<b>bihariiii@ptyes</b>
+<br><br>
+<button class="add-btn" onclick="sendOrder()">I Have Paid</button>
+<br><br>
+<button onclick="closePayment()">Cancel</button>
+</div>
 
 <script>
+(function(){
+emailjs.init("L-E1QJKjWzHu3YtdK");
+})();
+
 const products=[
 {name:"Iphone 99",price:1000,image:"https://i.ibb.co/fY4DDK62/original-imahft5nxmyqndhf.jpg"},
 {name:"Pova",price:17000,image:"https://i.ibb.co/k2wm3twM/61ik3-Qlkm-ML-AC-UF1000-1000-QL80-FMwebp.webp"},
 {name:"Nothing Phone",price:22000,image:"https://i.ibb.co/QvBS9yFq/images-3.jpg"},
-{name:"CMT Phone",price:15000,image:"https://i.ibb.co/q3sVxW2J/original-imah3ajcxshpd2t2.jpg"},
 {name:"Bracelet",price:1000,image:"https://i.ibb.co/3yv68YtJ/1-3-13.jpg"}
 ];
 
-let filteredProducts=[...products];
 let cart=[];
 
 function displayProducts(){
 const container=document.getElementById("productContainer");
-container.innerHTML="";
-filteredProducts.forEach((p,i)=>{
+products.forEach((p,i)=>{
 container.innerHTML+=`
 <div class="card">
 <img src="${p.image}">
@@ -262,70 +195,58 @@ updateCart();
 
 function updateCart(){
 let html="",total=0,totalQty=0;
-cart.forEach((c,i)=>{
+cart.forEach((c)=>{
 let p=products[c.index];
 total+=p.price*c.qty;
 totalQty+=c.qty;
-html+=`
-<div class="cart-item">
-${p.name}<br>
-<button class="qty-btn" onclick="changeQty(${i},-1)">-</button>
-${c.qty}
-<button class="qty-btn" onclick="changeQty(${i},1)">+</button>
-<br>
-<button class="remove-btn" onclick="removeItem(${i})">Remove</button>
-</div>`;
+html+=`${p.name} x ${c.qty}<br>`;
 });
 document.getElementById("cartItems").innerHTML=html;
 document.getElementById("totalPrice").innerText=total;
 document.getElementById("cartCount").innerText=totalQty;
 }
 
-function changeQty(i,val){
-cart[i].qty+=val;
-if(cart[i].qty<=0)cart.splice(i,1);
-updateCart();
-}
-function removeItem(i){
-cart.splice(i,1);
-updateCart();
-}
 function toggleCart(){
 document.getElementById("cart").classList.toggle("active");
 }
 
-function generateInvoice(){
+function openPayment(){
+document.getElementById("paymentModal").classList.add("active");
+}
+
+function closePayment(){
+document.getElementById("paymentModal").classList.remove("active");
+}
+
+function sendOrder(){
 let name=document.getElementById("custName").value;
 let phone=document.getElementById("custPhone").value;
-let invoice=document.getElementById("invoice");
+
 let items="";
 let total=0;
 
 cart.forEach(c=>{
 let p=products[c.index];
-items+=`${p.name} x ${c.qty}<br>`;
+items+=p.name+" x "+c.qty+"\n";
 total+=p.price*c.qty;
 });
 
-invoice.innerHTML=`
-<h3 style="color:#00f0ff;text-align:center">Invoice</h3>
-Customer: ${name}<br>
-Phone: ${phone}<br><br>
-${items}
-<hr>
-Total: ₹${total}<br><br>
-<button onclick="closeInvoice()" class="add-btn">Close</button>
-`;
-invoice.classList.add("active");
+emailjs.send("service_0xkt6c5","template_ob1kyu7",{
+customer_name:name,
+customer_phone:phone,
+order_items:items,
+total_amount:total
+}).then(function(){
+alert("Order Sent Successfully ✅");
 cart=[];
 updateCart();
+closePayment();
 toggleCart();
-}
-
-function closeInvoice(){
-document.getElementById("invoice").classList.remove("active");
+},function(error){
+alert("Email Failed ❌");
+});
 }
 </script>
 
 </body>
-  </html>
+</html>
