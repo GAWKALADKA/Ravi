@@ -13,7 +13,7 @@ emailjs.init("L-E1QJKjWzHu3YtdK");
 </script>
 
 <style>
-body{margin:0;font-family:Segoe UI;background:#0f0f1a;color:white;}
+body{margin:0;font-family:Segoe UI;background:#0f0f1a;color:white;overflow-x:hidden;}
 header{
 background:linear-gradient(90deg,#ff00cc,#3333ff,#00ffee);
 padding:15px;
@@ -112,10 +112,60 @@ transform:translate(-50%,-50%);
 background:#1a1a2e;
 padding:20px;
 border-radius:15px;
-box-shadow:0 0 25px #00ffee;
+box-shadow:0 0 20px #00ffee;
 display:none;
 text-align:center;
 width:300px;
+position:fixed;
+}
+
+.timer{
+background:#ff0033;
+text-align:center;
+padding:8px;
+box-shadow:0 0 15px red;
+}
+
+/* ===== ABOUT EFFECTS ===== */
+
+@keyframes neonBlink {
+0% { box-shadow:0 0 10px #00ffee; }
+50% { box-shadow:0 0 30px #ff00cc; }
+100% { box-shadow:0 0 10px #00ffee; }
+}
+
+@keyframes pulsePop {
+0% { transform:translate(-50%,-50%) scale(0.7); opacity:0; }
+100% { transform:translate(-50%,-50%) scale(1); opacity:1; }
+}
+
+@keyframes textBlink {
+0% { text-shadow:0 0 5px #00ffee; }
+50% { text-shadow:0 0 20px #ff00cc; }
+100% { text-shadow:0 0 5px #00ffee; }
+}
+
+@keyframes floatParticle {
+0% { transform:translateY(0px); opacity:0.3; }
+100% { transform:translateY(-80px); opacity:0; }
+}
+
+#aboutPopup{
+overflow:hidden;
+animation:neonBlink 1.5s infinite alternate;
+}
+
+#aboutPopup h3{
+animation:textBlink 1.2s infinite alternate;
+}
+
+.particle{
+position:absolute;
+width:6px;
+height:6px;
+background:#00ffee;
+border-radius:50%;
+animation:floatParticle 4s linear infinite;
 }
 
 input{
@@ -124,13 +174,6 @@ padding:8px;
 margin-top:8px;
 border-radius:6px;
 border:none;
-}
-
-.timer{
-background:#ff0033;
-text-align:center;
-padding:8px;
-box-shadow:0 0 15px red;
 }
 </style>
 </head>
@@ -153,12 +196,15 @@ box-shadow:0 0 15px red;
 
 <a href="https://wa.me/7520947031" class="whatsapp" target="_blank">💬</a>
 
-<!-- ABOUT POPUP -->
+<!-- ABOUT -->
 <div class="popup" id="aboutPopup">
-<h3>Hi I am Aayu 👋</h3>
-<p>Mai is website ka owner hu.<br>
-Achha hua aapne visit kiya ❤️<br>
-Mujhe ummeed hai aapko pasand aaya hoga.</p>
+<div class="particle" style="left:20%;animation-delay:0s;"></div>
+<div class="particle" style="left:40%;animation-delay:1s;"></div>
+<div class="particle" style="left:60%;animation-delay:2s;"></div>
+<div class="particle" style="left:80%;animation-delay:3s;"></div>
+
+<h3 id="aboutTitle"></h3>
+<p id="aboutText"></p>
 <button class="btn" onclick="closeAbout()">Close</button>
 </div>
 
@@ -216,28 +262,15 @@ container.innerHTML+=`
 }
 displayProducts();
 
-function addCart(i){
-cart.push(products[i]);
-alert("Added to cart");
-}
+function addCart(i){cart.push(products[i]);alert("Added to cart");}
 
-function openCart(){
-document.getElementById("cartPanel").style.display="block";
-showCart();
-}
-function closeCart(){
-document.getElementById("cartPanel").style.display="none";
-}
+function openCart(){document.getElementById("cartPanel").style.display="block";showCart();}
+function closeCart(){document.getElementById("cartPanel").style.display="none";}
 
 function showCart(){
-let items="";
-let total=0;
-cart.forEach(p=>{
-items+=`<p>${p.name} - ₹${p.price}</p>`;
-total+=p.price;
-});
-let gst=total*0.18;
-let final=total+gst+50;
+let items="",total=0;
+cart.forEach(p=>{items+=`<p>${p.name} - ₹${p.price}</p>`;total+=p.price;});
+let final=total+(total*0.18)+50;
 document.getElementById("cartItems").innerHTML=items;
 document.getElementById("total").innerText="Total: ₹"+final.toFixed(0);
 }
@@ -245,14 +278,8 @@ document.getElementById("total").innerText="Total: ₹"+final.toFixed(0);
 function checkout(){
 let name=document.getElementById("custName").value;
 let phone=document.getElementById("custPhone").value;
-
-if(name=="" || phone==""){
-alert("Please fill name & phone");
-return;
-}
-
-let totalText=document.getElementById("total").innerText;
-document.getElementById("payAmount").innerText=totalText.replace("Total: ₹","");
+if(name==""||phone==""){alert("Fill details");return;}
+document.getElementById("payAmount").innerText=document.getElementById("total").innerText.replace("Total: ₹","");
 document.getElementById("paymentPopup").style.display="block";
 }
 
@@ -260,9 +287,7 @@ function confirmOrder(){
 let name=document.getElementById("custName").value;
 let phone=document.getElementById("custPhone").value;
 let items="";
-cart.forEach(p=>{
-items+=p.name+" - ₹"+p.price+"\n";
-});
+cart.forEach(p=>{items+=p.name+" - ₹"+p.price+"\n";});
 let totalText=document.getElementById("total").innerText;
 
 emailjs.send("service_0xkt6c5","template_ob1kyu7",{
@@ -273,18 +298,41 @@ order_total:totalText
 }).then(function(){
 document.getElementById("paymentPopup").style.display="none";
 document.getElementById("confirmPopup").style.display="block";
-},function(){
-alert("Email Failed ❌");
 });
 }
 
+/* About Typing */
 function openAbout(){
-document.getElementById("aboutPopup").style.display="block";
-}
-function closeAbout(){
-document.getElementById("aboutPopup").style.display="none";
-}
+let popup=document.getElementById("aboutPopup");
+popup.style.display="block";
+popup.style.animation="pulsePop 0.4s ease";
 
+let title="Hi I am Aayu 👋";
+let text="Mai is website ka owner hu.\nAchha hua aapne visit kiya ❤️\nMujhe ummeed hai aapko pasand aaya hoga.";
+
+let i=0;
+document.getElementById("aboutTitle").innerHTML="";
+document.getElementById("aboutText").innerHTML="";
+
+let t=setInterval(()=>{
+if(i<title.length){
+document.getElementById("aboutTitle").innerHTML+=title.charAt(i);
+i++;
+}else{
+clearInterval(t);
+let j=0;
+let t2=setInterval(()=>{
+if(j<text.length){
+document.getElementById("aboutText").innerHTML+=text.charAt(j);
+j++;
+}else{clearInterval(t2);}
+},30);
+}
+},80);
+}
+function closeAbout(){document.getElementById("aboutPopup").style.display="none";}
+
+/* Timer */
 let time=600;
 setInterval(()=>{
 if(time>0){
@@ -297,6 +345,5 @@ document.getElementById("timer").innerText="Flash Sale Ends In: "+m+":"+s;
 },1000);
 
 </script>
-
 </body>
-</html>
+  </html>
